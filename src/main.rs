@@ -1,6 +1,12 @@
-use std::collections::HashMap;
+extern crate rayon;
 
-#[derive(Clone, Copy, Debug)]
+use rayon::prelude::*;
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
+
+#[derive(Clone, Copy)]
 enum Operation {
     PA = 0,
     PB = 1,
@@ -395,11 +401,77 @@ fn bob(count: u32) -> (usize, Vec<(Vec<u32>, Vec<Operation>)>) {
     )
 }
 
-fn main() {
-    let (max_ops, solution) = bxb(5);
+const OPS_TO_STRING: [&str; 11] = [
+    "pa", "pb", "sa", "sb", "ss", "ra", "rb", "rr", "rra", "rrb", "rrr",
+];
 
-    println!("Max Operations: {}", max_ops);
-    for (left, ops) in solution {
-        println!("Left: {:?}, Operations: {:?}", left, ops);
+fn ops_to_string(ops: &Vec<Operation>) -> String {
+    return ops
+        .iter()
+        .map(|op| OPS_TO_STRING[*op as usize])
+        .collect::<Vec<_>>()
+        .join(" ");
+}
+
+fn stack_to_string(stack: &Vec<u32>) -> String {
+    return stack
+        .iter()
+        .filter(|x| **x != 0u32)
+        .map(|x| x.to_string())
+        .collect::<Vec<_>>()
+        .join(" ");
+}
+
+fn do_work(count: u32, name: &str, path: fn(u32) -> (usize, Vec<(Vec<u32>, Vec<Operation>)>)) {
+    let (max_ops, solution) = path(count);
+    let directory = "generated"; // Specify the directory name
+    if !Path::new(directory).exists() {
+        if let Err(err) = std::fs::create_dir(directory) {
+            eprintln!("Unable to create directory: {:?}", err);
+            return;
+        }
     }
+    let file_path = format!("{}/{}_{}.txt", directory, name, count);
+    let mut file = File::create(file_path.clone()).expect("Unable to create file");
+    writeln!(file, "Max Operations: {}", max_ops).expect("Unable to write to file");
+    for (left, ops) in &solution {
+        writeln!(
+            file,
+            "Stack: {:?}, Operations: {:?}",
+            stack_to_string(left),
+            ops_to_string(ops)
+        )
+        .expect("Unable to write to file");
+    }
+    println!("Done: {}_{}", name, count);
+}
+
+const WORK_ITEMS: [(&str, fn(u32) -> (usize, Vec<(Vec<u32>, Vec<Operation>)>)); 19] = [
+    ("tst", tst),
+    ("tsb", tsb),
+    ("txt", txt),
+    ("txb", txb),
+    ("tot", tot),
+    ("tos", tos),
+    ("tob", tob),
+    ("sss", sss),
+    ("sxs", sxs),
+    ("sot", sot),
+    ("sos", sos),
+    ("sob", sob),
+    ("bst", bst),
+    ("bsb", bsb),
+    ("bxt", bxt),
+    ("bxb", bxb),
+    ("bot", bot),
+    ("bos", bos),
+    ("bob", bob),
+];
+
+fn main() {
+    let infinite_work_items = WORK_ITEMS.iter().cycle();
+    infinite_work_items
+        .enumerate()
+        .par_bridge()
+        .for_each(|(count, (name, path))| do_work((count / WORK_ITEMS.len()) as u32, *name, *path))
 }
