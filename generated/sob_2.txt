@@ -1,0 +1,3 @@
+Max Operations: 4
+Stack: "1 2", Operations: "pb rb pb rb"
+Stack: "2 1", Operations: "pb pb rb rb"
