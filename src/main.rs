@@ -21,18 +21,18 @@ enum Operation {
     RRR = 10,
 }
 
-static OPERATIONS: [Operation; 11] = [
-    Operation::PA,
-    Operation::PB,
-    Operation::SA,
-    Operation::SB,
-    Operation::SS,
+static OPERATIONS_IN_EFFICIENCY_ORDER: [Operation; 11] = [
     Operation::RA,
     Operation::RB,
-    Operation::RR,
     Operation::RRA,
     Operation::RRB,
+    Operation::SA,
+    Operation::SB,
+    Operation::RR,
     Operation::RRR,
+    Operation::SS,
+    Operation::PA,
+    Operation::PB,
 ];
 
 static REVERSE_OPERATIONS: [Operation; 11] = [
@@ -207,9 +207,8 @@ fn get_all_cases(initial_state: State) -> (usize, HashMap<String, State>, Vec<Ve
 
         let mut next_distance = Vec::new();
         for current_state in &list[distance] {
-            for &op in OPERATIONS
+            for &op in OPERATIONS_IN_EFFICIENCY_ORDER
                 .iter()
-                .rev()
                 .filter(|&&op| IS_MEANINGFUL[op as usize](current_state))
             {
                 let next_state = APPLY[op as usize](current_state);
