@@ -1,7 +1,7 @@
 Max Operations: 6
 Stack: "1 2 3", Operations: "pb rb pb pb sb rrb"
 Stack: "1 3 2", Operations: "pb rb pb pb rrb"
-Stack: "2 1 3", Operations: "pb rr pb rrr pb"
+Stack: "2 1 3", Operations: "pb sa pb sb pb"
 Stack: "2 3 1", Operations: "pb pb sb pb"
 Stack: "3 1 2", Operations: "pb pb pb sb"
 Stack: "3 2 1", Operations: "pb pb pb"

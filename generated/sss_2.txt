@@ -1,3 +1,3 @@
 Max Operations: 1
 Stack: "1 2", Operations: ""
-Stack: "2 1", Operations: "ra"
+Stack: "2 1", Operations: "rra"
